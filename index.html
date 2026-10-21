@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>陈教授肺癌团队・就诊自助指引卡</title>
+<style>
+/* ============ 基础与配色 ============ */
+:root{
+  --bg:#F5F9F6;
+  --card:#FFFFFF;
+  --blue:#5B9BBD;
+  --blue-soft:#E7F1F6;
+  --blue-soft2:#D8E8EF;
+  --green:#6FAE84;
+  --green-soft:#EAF4EC;
+  --green-soft2:#DCEBDD;
+  --text:#33444C;
+  --muted:#6E838A;
+  --line:#E3ECE7;
+  --red:#D2544F;
+  --red-soft:#FBEEEC;
+  --red-border:#EBB9B4;
+  --shadow:0 2px 12px rgba(90,120,110,.10);
+  --shadow-hover:0 10px 24px rgba(90,120,110,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:1.05rem;
+  line-height:1.85;
+  padding-bottom:110px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 隐藏的单选钮（用于纯 CSS 跳转 / 折叠） */
+.hide-radio{position:absolute;opacity:0;width:0;height:0;margin:0;padding:0;border:0}
+
+/* ============ 页面切换（纯 CSS，无 JS） ============ */
+.page{display:none}
+#nav-home:checked ~ #page-home,
+#nav-first:checked ~ #page-first,
+#nav-drug:checked ~ #page-drug,
+#nav-chemo:checked ~ #page-chemo,
+#nav-family:checked ~ #page-family{
+  display:block;animation:fadeIn .35s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.wrap{max-width:640px;margin:0 auto;padding:0 16px}
+
+/* ============ 顶部 Hero ============ */
+.hero{
+  background:linear-gradient(160deg,#E7F1F6 0%,#EAF4EC 100%);
+  padding:26px 16px 22px;
+  border-bottom:1px solid var(--line);
+}
+.hero-inner{max-width:640px;margin:0 auto;display:flex;align-items:flex-start;gap:14px}
+.hero-lung{flex:0 0 auto;width:58px;height:50px;margin-top:4px}
+.hero-title{font-size:1.65rem;font-weight:700;line-height:1.45;letter-spacing:.5px}
+.hero-sub{font-size:1rem;color:var(--muted);margin-top:6px}
+
+/* ============ 搜索框（JS 增强，无 JS 时其余功能不受影响） ============ */
+.search-box{max-width:640px;margin:0 auto;padding:16px 16px 4px;position:relative}
+.search-input{
+  width:100%;padding:12px 16px 12px 42px;font-size:1.05rem;
+  border:1.5px solid var(--line);border-radius:12px;background:var(--card);
+  color:var(--text);outline:none;box-shadow:var(--shadow);
+}
+.search-input:focus{border-color:var(--blue)}
+.search-icon{position:absolute;left:30px;top:29px;width:18px;height:18px;color:var(--muted);pointer-events:none}
+.search-results{
+  display:none;margin-top:10px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;box-shadow:var(--shadow);overflow:hidden;max-height:320px;overflow-y:auto;
+}
+.search-results.show{display:block}
+.search-item{
+  display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);
+  padding:12px 14px;cursor:pointer;font-size:1rem;color:var(--text);
+}
+.search-item:last-child{border-bottom:none}
+.search-item:active{background:var(--blue-soft)}
+.si-title{font-weight:600;display:block}
+.si-page{font-size:.85rem;color:var(--muted)}
+.si-snippet{font-size:.9rem;color:var(--muted);margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.search-empty{padding:14px;color:var(--muted);font-size:.95rem}
+
+/* ============ 区块标题 ============ */
+.section-title{
+  font-size:1.2rem;font-weight:700;margin:22px 0 12px;padding-left:12px;
+  border-left:4px solid var(--blue);line-height:1.4;
+}
+
+/* ============ 首页主卡片（label 触发跳转） ============ */
+.main-cards{display:grid;gap:14px;margin-top:16px}
+.nav-card{
+  display:flex;align-items:center;gap:14px;background:var(--card);
+  border:1px solid var(--line);border-radius:16px;padding:16px;
+  cursor:pointer;text-align:left;box-shadow:var(--shadow);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.nav-card:active{transform:translateY(-1px)}
+.nav-icon{flex:0 0 auto;width:56px;height:56px;border-radius:14px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center}
+.nav-icon.green{background:var(--green-soft)}
+.nav-icon svg{width:40px;height:40px}
+.nav-card .nc-title{font-size:1.12rem;font-weight:600;line-height:1.5}
+.nav-card .nc-sub{font-size:.9rem;color:var(--muted)}
+.nav-arrow{margin-left:auto;color:var(--muted);flex:0 0 auto;font-size:1.2rem}
+.nav-card svg{pointer-events:none}
+
+/* ============ 紧急提醒（永久展开） ============ */
+.emergency{
+  background:var(--red-soft);border:1.5px solid var(--red-border);
+  border-radius:16px;padding:16px;margin-top:20px;
+}
+.emergency .em-title{color:var(--red);font-weight:700;font-size:1.15rem;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.emergency ul{list-style:none;margin-top:10px}
+.emergency li{
+  position:relative;padding:7px 0 7px 24px;font-size:1.02rem;line-height:1.6;
+  border-bottom:1px dashed var(--red-border);
+}
+.emergency li:last-child{border-bottom:none}
+.emergency li::before{content:"•";position:absolute;left:8px;top:7px;color:var(--red);font-weight:700}
+.emergency .em-tip{margin-top:10px;font-size:.92rem;color:var(--red)}
+
+/* ============ 折叠卡片（纯 CSS，radio 互斥） ============ */
+.acc{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.acc-card{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow);
+  scroll-margin-top:70px;
+}
+.acc-card.flash{animation:flash .9s ease}
+@keyframes flash{0%,60%{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}100%{border-color:var(--line)}}
+.acc-head{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:15px 16px;cursor:pointer;text-align:left;font-size:1.1rem;font-weight:600;
+  color:var(--text);line-height:1.5;
+}
+.acc-head .ah-ico{flex:0 0 auto;font-size:1.2rem}
+.acc-head .ah-title{flex:1}
+.acc-head .ah-arrow{
+  flex:0 0 auto;width:20px;height:20px;color:var(--muted);transition:transform .25s ease;
+}
+.acc-toggle:checked ~ .acc-head .ah-arrow{transform:rotate(180deg)}
+.acc-head svg{pointer-events:none}
+.acc-body{display:none}
+.acc-toggle:checked ~ .acc-body{display:block;animation:accFade .3s ease}
+@keyframes accFade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.acc-body-inner{overflow:hidden}
+.acc-content{padding:0 16px 16px;font-size:1.02rem;line-height:1.85;color:var(--text)}
+.acc-content p{margin:8px 0}
+.acc-content .tag{
+  display:inline-block;background:var(--blue-soft);color:#3E7C9C;font-size:.85rem;
+  padding:2px 9px;border-radius:8px;margin-right:6px;vertical-align:middle;
+}
+.acc-content .tag.green{background:var(--green-soft);color:#3F7A50}
+.acc-content .tag.warn{background:var(--red-soft);color:var(--red)}
+.acc-content ul{list-style:none;margin:6px 0}
+.acc-content li{position:relative;padding:5px 0 5px 22px;line-height:1.7}
+.acc-content li::before{content:"✔";position:absolute;left:0;top:5px;color:var(--green);font-size:.9rem}
+.acc-content li.plain::before{content:"·";color:var(--blue);font-weight:700;font-size:1.2rem;top:2px}
+.acc-content .strong{font-weight:700;color:var(--text)}
+.acc-content .note{
+  margin-top:10px;padding:10px 12px;background:var(--green-soft);border-radius:10px;
+  border-left:3px solid var(--green);font-size:.98rem;
+}
+
+/* ============ 子页面头部 ============ */
+.subhead{
+  position:sticky;top:0;z-index:10;background:linear-gradient(160deg,#E7F1F6,#EAF4EC);
+  border-bottom:1px solid var(--line);padding:12px 16px;
+}
+.subhead-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.back-btn{
+  flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;background:var(--card);
+  border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-size:.95rem;
+  color:var(--text);cursor:pointer;box-shadow:var(--shadow);
+}
+.back-btn:active{background:var(--blue-soft)}
+.subhead-title{font-size:1.15rem;font-weight:700;line-height:1.4}
+
+/* ============ 底部固定免责条 ============ */
+.disclaimer{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:rgba(51,68,76,.95);color:#E9F0EE;font-size:.82rem;line-height:1.55;
+  text-align:center;padding:9px 14px;
+}
+.disclaimer b{color:#FFD9D6;font-weight:700}
+
+/* ============ 返回首页固定按钮（子页显示，纯 CSS） ============ */
+.back-home-fab{
+  position:fixed;left:50%;bottom:66px;transform:translateX(-50%);z-index:15;
+  display:none;align-items:center;gap:6px;background:var(--blue);color:#fff;
+  border-radius:999px;padding:11px 26px;font-size:1.02rem;font-weight:600;
+  cursor:pointer;box-shadow:0 4px 16px rgba(91,155,189,.45);
+}
+.back-home-fab:active{opacity:.85}
+#nav-first:checked ~ .back-home-fab,
+#nav-drug:checked ~ .back-home-fab,
+#nav-chemo:checked ~ .back-home-fab,
+#nav-family:checked ~ .back-home-fab{display:inline-flex}
+
+/* ============ 响应式（电脑端） ============ */
+@media(min-width:720px){
+  body{font-size:1.08rem}
+  .hero-title{font-size:1.9rem}
+  .hero-lung{width:66px;height:58px}
+  .nav-card,.acc-card,.emergency{border-radius:18px}
+  .nav-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+}
+</style>
+</head>
+<body>
+
+<!-- 页面切换用的单选钮（隐藏，纯 CSS 控制跳转） -->
+<input type="radio" name="nav" id="nav-home" class="hide-radio" checked>
+<input type="radio" name="nav" id="nav-first" class="hide-radio">
+<input type="radio" name="nav" id="nav-drug" class="hide-radio">
+<input type="radio" name="nav" id="nav-chemo" class="hide-radio">
+<input type="radio" name="nav" id="nav-family" class="hide-radio">
+
+<!-- ==================== 首页 ==================== -->
+<section class="page" id="page-home">
+
+  <header class="hero">
+    <div class="hero-inner">
+      <svg class="hero-lung" viewBox="0 0 72 60" aria-hidden="true">
+        <path d="M36 4 v14" fill="none" stroke="#5B9BBD" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M36 18 C34 22 27 24 24 29 L23 42 C22 49 29 54 36 56 C43 54 50 49 49 42 L48 29 C45 24 38 22 36 18 Z"
+              fill="#E7F1F6" stroke="#5B9BBD" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M24 29 C27 30 29 33 30 36" fill="none" stroke="#5B9BBD" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+        <path d="M48 29 C45 30 43 33 42 36" fill="none" stroke="#5B9BBD" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+      </svg>
+      <div>
+        <h1 class="hero-title">陈教授肺癌团队・就诊自助指引卡</h1>
+        <p class="hero-sub">团队患者宣教参考</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 本地静态搜索 -->
+  <div class="search-box">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+      <path d="M20 20 L16.5 16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input class="search-input" id="searchInput" type="text" placeholder="搜索页面内容，如：加号 / 复查 / 饮食 / 输液港" autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- 4 张主卡片 -->
+    <div class="main-cards">
+      <label class="nav-card" for="nav-first" data-search-label="初诊患者">
+        <span class="nav-icon">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M7 18 h16 l4 4 h30 v24 H7 Z" fill="#EAF4EC" stroke="#6FAE84" stroke-width="2.4" stroke-linejoin="round"/>
+            <rect x="21" y="22" width="22" height="18" rx="3" fill="#E7F1F6" stroke="#5B9BBD" stroke-width="2"/>
+            <rect x="25" y="27" width="7" height="5" rx="1.5" fill="#D8E8EF"/>
+            <rect x="34" y="27" width="5" height="5" rx="1.5" fill="#D8E8EF"/>
+            <rect x="25" y="33" width="14" height="3" rx="1.5" fill="#D8E8EF"/>
+          </svg>
+        </span>
+        <span>
+          <span class="nc-title">📋 我是第一次来找陈教授｜初诊患者</span><br>
+          <span class="nc-sub">出诊安排 · 加号规则 · 必带资料</span>
+        </span>
+        <span class="nav-arrow">›</span>
+      </label>
+
+      <label class="nav-card" for="nav-drug" data-search-label="靶向药 复查">
+        <span class="nav-icon green">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <rect x="7" y="24" width="50" height="22" rx="7" fill="#EAF4EC" stroke="#6FAE84" stroke-width="2.4"/>
+            <line x1="23.5" y1="24" x2="23.5" y2="46" stroke="#6FAE84" stroke-width="2"/>
+            <line x1="40.5" y1="24" x2="40.5" y2="46" stroke="#6FAE84" stroke-width="2"/>
+            <rect x="12" y="29" width="7" height="12" rx="3.5" fill="#6FAE84" opacity=".55"/>
+            <rect x="28" y="29" width="7" height="12" rx="3.5" fill="#5B9BBD" opacity=".55"/>
+            <rect x="45" y="29" width="7" height="12" rx="3.5" fill="#6FAE84" opacity=".55"/>
+          </svg>
+        </span>
+        <span>
+          <span class="nc-title">💊 我在吃靶向药，定期复查</span><br>
+          <span class="nc-sub">复查时间 · 服药要点 · 不良反应</span>
+        </span>
+        <span class="nav-arrow">›</span>
+      </label>
+
+      <label class="nav-card" for="nav-chemo" data-search-label="化疗 免疫治疗">
+        <span class="nav-icon">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M26 8 h12 l-2.5 16 v20 c0 6 -3.5 9 -3.5 9 s-3.5 -3 -3.5 -9 V24 Z" fill="#E7F1F6" stroke="#5B9BBD" stroke-width="2.4" stroke-linejoin="round"/>
+            <line x1="22.5" y1="30" x2="41.5" y2="30" stroke="#5B9BBD" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>
+          <span class="nc-title">💉 我准备 / 正在做化疗、免疫治疗</span><br>
+          <span class="nc-sub">化疗前检查 · 注意事项 · 居家营养</span>
+        </span>
+        <span class="nav-arrow">›</span>
+      </label>
+
+      <label class="nav-card" for="nav-family" data-search-label="家属 陪护 营养 照护">
+        <span class="nav-icon green">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="23" cy="13" r="6" fill="#EAF4EC" stroke="#6FAE84" stroke-width="2.2"/>
+            <circle cx="41" cy="13" r="6" fill="#EAF4EC" stroke="#6FAE84" stroke-width="2.2"/>
+            <path d="M23 20 L19 44 M23 20 L27 44" stroke="#6FAE84" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M41 20 L37 44 M41 20 L45 44" stroke="#6FAE84" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M26 27 C30 32 34 32 38 27" fill="none" stroke="#6FAE84" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>
+          <span class="nc-title">🤍 我是家属，想学习陪护、营养照护</span><br>
+          <span class="nc-sub">饮食误区 · 居家观察 · 心理陪伴</span>
+        </span>
+        <span class="nav-arrow">›</span>
+      </label>
+    </div>
+
+    <!-- 模块 1：紧急提醒（永久展开） -->
+    <section class="emergency">
+      <div class="em-title">⚠️ 出现以下情况，不要等加号、不要等复诊，立刻急诊</div>
+      <ul>
+        <li>大口咯血、喘不上气</li>
+        <li>持续高烧 38.5℃以上不退</li>
+        <li>剧烈头痛、呕吐、手脚无力、说话不清</li>
+        <li>持续严重呕吐腹泻、身上莫名大片淤青出血</li>
+      </ul>
+      <div class="em-tip">这些情况可能很危险，请第一时间就近到急诊就诊，不要等门诊。</div>
+    </section>
+
+    <!-- 模块 2：高频快速问答（互斥折叠） -->
+    <h2 class="section-title">高频快速问答</h2>
+    <p style="font-size:.95rem;color:var(--muted);margin-top:-6px">点一下展开，再点收起；点开新的会自动收起上一条</p>
+    <div class="acc" data-group="faq">
+      <div class="acc-card" data-page="nav-home" data-toggle="acc-faq-1" data-search-label="挂号加号 加号申请失败">
+        <input type="radio" name="acc-faq" id="acc-faq-1" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-faq-1">
+          <span class="ah-ico">🩺</span><span class="ah-title">挂号加号</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">加号申请失败是什么原因？</span></p>
+          <p>加号名额有限、申请的人多，审批较严，常见原因有：申请晚了（只有早上 8:30–9:30 开放）、号源已满、资料不全，或审批通过后没在 30 分钟内缴费导致失效。</p>
+          <p>另外提醒：加号只能线上申请，<span class="strong">没有线下手写加号</span>；如果多次挂号后不来（爽约），也可能影响以后挂号、加号的资格。</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-home" data-toggle="acc-faq-2" data-search-label="开药 代取药">
+        <input type="radio" name="acc-faq" id="acc-faq-2" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-faq-2">
+          <span class="ah-ico">💊</span><span class="ah-title">开药</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">家属能否代取药？</span></p>
+          <p>可以。代取药时请带上：患者本人的医保卡（或就诊凭证），以及代办人自己的身份证件。具体以本院取药窗口要求为准。</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-home" data-toggle="acc-faq-3" data-search-label="门特 异地医保 报销 备案">
+        <input type="radio" name="acc-faq" id="acc-faq-3" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-faq-3">
+          <span class="ah-ico">🏥</span><span class="ah-title">门特医保</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">门特、异地医保怎么办理？</span></p>
+          <p>各地政策不一样，报销比例和办理流程都不同。建议提前在参保地做好<span class="strong">异地就医备案</span>（医保备案），通常能明显提高报销比例。具体以当地医保局规定为准。</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-home" data-toggle="acc-faq-4" data-search-label="输液港 维护">
+        <input type="radio" name="acc-faq" id="acc-faq-4" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-faq-4">
+          <span class="ah-ico">🩹</span><span class="ah-title">输液港</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">输液港是什么？多久维护一次？</span></p>
+          <p>输液港是一种长期留在体内的「输液通道」，埋在皮肤下面。做治疗时不用每次反复扎手背静脉，能减少疼痛和血管损伤。</p>
+          <p>它一般需要定期维护（通常约 1 个月一次），具体维护时间以本院护士交代为准。</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-home" data-toggle="acc-faq-5" data-search-label="报告 拿报告 代拿报告">
+        <input type="radio" name="acc-faq" id="acc-faq-5" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-faq-5">
+          <span class="ah-ico">📄</span><span class="ah-title">报告相关</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">家属能否拿报告？</span></p>
+          <p>可以。请带上患者本人的医保卡，以及代办人自己的证件。取报告前可以先在手机或电话里确认报告是否已经出来，避免白跑一趟。</p>
+        </div></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== 子页 1：初诊患者 ==================== -->
+<section class="page" id="page-first">
+  <header class="subhead">
+    <div class="subhead-inner">
+      <label class="back-btn" for="nav-home">← 首页</label>
+      <div class="subhead-title">📋 初诊患者指引</div>
+    </div>
+  </header>
+  <div class="wrap" style="padding-top:14px">
+    <div class="acc" data-group="first">
+      <div class="acc-card" data-page="nav-first" data-toggle="acc-first-1" data-search-label="出诊安排 越秀 黄埔 诊室">
+        <input type="radio" name="acc-first" id="acc-first-1" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-first-1"><span class="ah-ico">🗓️</span><span class="ah-title">陈教授出诊安排</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="tag">越秀院区</span>周二、周四出诊</p>
+          <ul>
+            <li class="plain">周二：诊室 301、304</li>
+            <li class="plain">周四：上午 319 诊室、下午 317 诊室</li>
+            <li class="plain">多个诊室均为陈教授亲自看诊、制定方案</li>
+          </ul>
+          <p><span class="tag green">黄埔院区</span>周五出诊，<span class="strong">周五没有加号通道</span></p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-first" data-toggle="acc-first-2" data-search-label="挂号 加号 线上申请 报到">
+        <input type="radio" name="acc-first" id="acc-first-2" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-first-2"><span class="ah-ico">📝</span><span class="ah-title">挂号 &amp; 线上加号规则</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="tag">常规号源</span>提前 7 天放号</p>
+          <p><span class="tag">加号</span></p>
+          <ul>
+            <li class="plain">仅越秀周二、周四早上 8:30–9:30 线上申请</li>
+            <li class="plain"><span class="strong">没有线下手写加号</span></li>
+            <li class="plain">审批通过后 30 分钟内缴费，超时自动失效</li>
+            <li class="plain">报到成功才会生成排队序号，不报到会排在最后</li>
+          </ul>
+          <p><span class="strong">报到两种方式：</span>手机定位报到、一楼自助机报到</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-first" data-toggle="acc-first-3" data-search-label="必带资料 身份证 医保卡 影像 胶片 病理 基因检测">
+        <input type="radio" name="acc-first" id="acc-first-3" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-first-3"><span class="ah-ico">🎒</span><span class="ah-title">就诊必带资料清单</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li>身份证、医保卡</li>
+            <li>CT / MR 影像（二维码动态影像 或 实体胶片，<span class="strong">不能只带纸质报告</span>）</li>
+            <li>病理报告、基因检测、PD-L1 报告</li>
+            <li>既往出院小结、之前用过的药物记录</li>
+            <li>高血压、糖尿病等慢性病长期用药清单</li>
+            <li>外院抽血化验单</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-first" data-toggle="acc-first-4" data-search-label="初诊小提醒 陪同 二维码 买药">
+        <input type="radio" name="acc-first" id="acc-first-4" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-first-4"><span class="ah-ico">💡</span><span class="ah-title">初诊小提醒</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">建议只 1 位家属陪同就诊</li>
+            <li class="plain">片子二维码提前在家测试能否正常打开</li>
+            <li class="plain">不要自行在外提前购买靶向、免疫药物</li>
+          </ul>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 子页 2：靶向药 / 复查 ==================== -->
+<section class="page" id="page-drug">
+  <header class="subhead">
+    <div class="subhead-inner">
+      <label class="back-btn" for="nav-home">← 首页</label>
+      <div class="subhead-title">💊 靶向药 · 复查患者</div>
+    </div>
+  </header>
+  <div class="wrap" style="padding-top:14px">
+    <div class="acc" data-group="drug">
+      <div class="acc-card" data-page="nav-drug" data-toggle="acc-drug-1" data-search-label="复查时间 头颅 普通内科门诊">
+        <input type="radio" name="acc-drug" id="acc-drug-1" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-drug-1"><span class="ah-ico">🗓️</span><span class="ah-title">复查时间参考</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">病情稳定一般 2–4 个月复查</li>
+            <li class="plain">脑转移患者按医嘱定期查头颅 MR</li>
+            <li class="plain">身体出现不舒服随时就诊</li>
+          </ul>
+          <div class="note"><span class="strong">重点提示：</span>复查、开药不用抢专家号，可以挂 25 元普通内科门诊。</div>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-drug" data-toggle="acc-drug-2" data-search-label="靶向药 服用要点 漏服 双倍补服">
+        <input type="radio" name="acc-drug" id="acc-drug-2" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-drug-2"><span class="ah-ico">💊</span><span class="ah-title">靶向药服用要点</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">按时服药</li>
+            <li class="plain">漏服药物：如果距离下一次吃药时间很近，直接跳过，<span class="strong">严禁下次双倍补服</span></li>
+            <li class="plain">服用方式严格遵照医嘱和药品说明书</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-drug" data-toggle="acc-drug-3" data-search-label="不良反应 皮疹 腹泻 胸闷 喘憋">
+        <input type="radio" name="acc-drug" id="acc-drug-3" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-drug-3"><span class="ah-ico">🩺</span><span class="ah-title">不良反应怎么处理</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">轻度皮疹、轻微腹泻：可以居家观察</li>
+            <li class="plain">皮肤破溃、严重持续腹泻、胸闷喘憋：<span class="strong">请及时联系医生</span></li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-drug" data-toggle="acc-drug-4" data-search-label="避坑 偏方 中药 保健品 断药">
+        <input type="radio" name="acc-drug" id="acc-drug-4" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-drug-4"><span class="ah-ico">⚠️</span><span class="ah-title">避坑提醒</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">不要自行服用偏方、不明中药、保健品，<span class="strong">可能影响药效</span></li>
+            <li class="plain">不要随意断药</li>
+          </ul>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 子页 3：化疗 / 免疫 ==================== -->
+<section class="page" id="page-chemo">
+  <header class="subhead">
+    <div class="subhead-inner">
+      <label class="back-btn" for="nav-home">← 首页</label>
+      <div class="subhead-title">💉 化疗 · 免疫治疗</div>
+    </div>
+  </header>
+  <div class="wrap" style="padding-top:14px">
+    <div class="acc" data-group="chemo">
+      <div class="acc-card" data-page="nav-chemo" data-toggle="acc-chemo-1" data-search-label="化疗前检查 血常规 生化 心电图 周期">
+        <input type="radio" name="acc-chemo" id="acc-chemo-1" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-chemo-1"><span class="ah-ico">🧪</span><span class="ah-title">化疗前硬性要求</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p><span class="strong">每次化疗前 7 天内完成：</span>血常规、生化、心电图</p>
+          <ul>
+            <li class="plain">当地正规医院的检查报告有效，带来评估</li>
+            <li class="plain">常规周期大多 3–4 周一次</li>
+            <li class="plain">指标不合格时疗程延后属于正常情况，不用恐慌</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-chemo" data-toggle="acc-chemo-2" data-search-label="止吐 升白针 白细胞 口罩">
+        <input type="radio" name="acc-chemo" id="acc-chemo-2" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-chemo-2"><span class="ah-ico">🛡️</span><span class="ah-title">化疗前后注意事项</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">遵医嘱服用预处理止吐药物</li>
+            <li class="plain">升白针严格按照医嘱使用</li>
+            <li class="plain">白细胞偏低时：少去人流密集场所，戴好口罩</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-chemo" data-toggle="acc-chemo-3" data-search-label="免疫治疗 不良反应 迟发 咳嗽 腹泻 乏力">
+        <input type="radio" name="acc-chemo" id="acc-chemo-3" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-chemo-3"><span class="ah-ico">🫁</span><span class="ah-title">免疫治疗小科普</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">免疫治疗和化疗不一样，<span class="strong">不良反应有可能迟发</span></li>
+            <li class="plain">长期留意：持续咳嗽、反复腹泻、不明乏力</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-chemo" data-toggle="acc-chemo-4" data-search-label="营养 少食多餐 鸡蛋 鱼虾 瘦肉 牛奶 蛋白">
+        <input type="radio" name="acc-chemo" id="acc-chemo-4" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-chemo-4"><span class="ah-ico">🍲</span><span class="ah-title">居家营养防护</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">少食多餐，优先鸡蛋、鱼虾、瘦肉、牛奶</li>
+            <li class="plain">喝汤营养有限，<span class="strong">吃肉才是补充蛋白的关键</span></li>
+          </ul>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 子页 4：家属陪护 ==================== -->
+<section class="page" id="page-family">
+  <header class="subhead">
+    <div class="subhead-inner">
+      <label class="back-btn" for="nav-home">← 首页</label>
+      <div class="subhead-title">🤍 家属陪护专区</div>
+    </div>
+  </header>
+  <div class="wrap" style="padding-top:14px">
+    <div class="acc" data-group="family">
+      <div class="acc-card" data-page="nav-family" data-toggle="acc-family-1" data-search-label="饮食 营养 发物 误区 蛋白">
+        <input type="radio" name="acc-family" id="acc-family-1" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-family-1"><span class="ah-ico">🍚</span><span class="ah-title">饮食营养建议 · 破除「发物」误区</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">均衡饮食，优先吃优质蛋白（鸡蛋、鱼虾、瘦肉、牛奶、豆制品）</li>
+            <li class="plain">民间常说的「发物」（如鸡、鱼、海鲜等）目前没有科学证据会「促进肿瘤」，反而多是优质蛋白来源</li>
+            <li class="plain">只要平时不过敏、不过量，大多数食物都可以正常吃</li>
+            <li class="plain">真正要少吃的：过油、过咸、腌制、烟熏、霉变的食物</li>
+          </ul>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-family" data-toggle="acc-family-2" data-search-label="居家观察 记录 体温 进食 症状">
+        <input type="radio" name="acc-family" id="acc-family-2" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-family-2"><span class="ah-ico">📋</span><span class="ah-title">居家观察记录建议</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <p>简单记录：<span class="strong">体温、进食情况、不适症状</span>，复诊带给医生参考。这样医生能更快了解病情变化。</p>
+        </div></div></div>
+      </div>
+
+      <div class="acc-card" data-page="nav-family" data-toggle="acc-family-3" data-search-label="心理陪伴 低落 失眠 沟通">
+        <input type="radio" name="acc-family" id="acc-family-3" class="acc-toggle hide-radio">
+        <label class="acc-head" for="acc-family-3"><span class="ah-ico">🤍</span><span class="ah-title">心理陪伴建议</span>
+          <svg class="ah-arrow" viewBox="0 0 24 24" fill="none"><path d="M6 9 L12 15 L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></label>
+        <div class="acc-body"><div class="acc-body-inner"><div class="acc-content">
+          <ul>
+            <li class="plain">多陪伴，<span class="strong">不要反复追问病情</span></li>
+            <li class="plain">长期低落、失眠可以和医生沟通</li>
+          </ul>
+        </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 返回首页（子页固定按钮，纯 CSS 控制显隐） ============ -->
+<label class="back-home-fab" for="nav-home">← 返回首页</label>
+
+<!-- ============ 底部固定免责 ============ -->
+<footer class="disclaimer">
+  本页面仅为本团队宣教参考，所有治疗方案以面诊医嘱为准；如果页面内容和医生当面交代不一致，<b>以医生口头医嘱优先</b>。
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* 兼容旧浏览器：closest 兜底 */
+  if(!Element.prototype.closest){
+    var _m = Element.prototype.matches || Element.prototype.webkitMatchesSelector || Element.prototype.msMatchesSelector;
+    if(_m){
+      Element.prototype.closest = function(sel){
+        var el = this;
+        while(el && el.nodeType === 1){
+          if(_m.call(el, sel)) return el;
+          el = el.parentElement || el.parentNode;
+        }
+        return null;
+      };
+    }
+  }
+
+  /* 增强：点击已展开的卡片可再次收起（无 JS 时仍可互斥展开） */
+  Array.prototype.forEach.call(document.querySelectorAll('label.acc-head'), function(label){
+    label.addEventListener('click', function(e){
+      var input = document.getElementById(label.getAttribute('for'));
+      if(input && input.checked){
+        e.preventDefault();
+        input.checked = false;
+      }
+    });
+  });
+
+  /* 本地静态搜索（浏览器支持时可用；搜索为增强功能） */
+  var searchInput = document.getElementById('searchInput');
+  var searchResults = document.getElementById('searchResults');
+  if(!searchInput || !searchResults) return;
+
+  var PAGE_NAMES = {
+    'nav-home':'首页',
+    'nav-first':'初诊患者',
+    'nav-drug':'靶向药 · 复查',
+    'nav-chemo':'化疗 · 免疫',
+    'nav-family':'家属陪护'
+  };
+
+  function buildIndex(){
+    var index = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-card'), function(el){
+      index.push({ page:el.getAttribute('for'), toggle:null, label:el.getAttribute('data-search-label')||'', text:(el.textContent||'').replace(/\s+/g,' ').trim() });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.acc-card'), function(el){
+      index.push({ page:el.getAttribute('data-page'), toggle:el.getAttribute('data-toggle'), label:el.getAttribute('data-search-label')||'', text:(el.textContent||'').replace(/\s+/g,' ').trim() });
+    });
+    return index;
+  }
+  var INDEX = buildIndex();
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function snippet(text, q, len){
+    text = text.replace(/\s+/g,' ').trim();
+    var i = text.indexOf(q);
+    var start = (i >= 0) ? Math.max(0, i - 12) : 0;
+    var s = text.slice(start, start + len);
+    if(start > 0) s = '…' + s;
+    if(start + len < text.length) s = s + '…';
+    return s;
+  }
+
+  function closeSearch(){
+    searchResults.classList.remove('show');
+    searchResults.innerHTML = '';
+  }
+
+  function doSearch(){
+    var q = searchInput.value.trim();
+    if(!q){ closeSearch(); return; }
+    var ql = q.toLowerCase();
+    var hits = [], seen = {};
+    for(var i=0;i<INDEX.length;i++){
+      var it = INDEX[i];
+      if(it.text.toLowerCase().indexOf(ql) >= 0){
+        var key = (it.page||'') + '|' + (it.toggle||'') + '|' + it.label;
+        if(!seen[key]){ seen[key] = 1; hits.push(it); }
+      }
+    }
+    if(hits.length === 0){
+      searchResults.innerHTML = '<div class="search-empty">没有找到相关内容，换个词试试（如：加号 / 复查 / 饮食）</div>';
+    }else{
+      var html = '';
+      for(var j=0;j<hits.length && j<20;j++){
+        var h = hits[j];
+        html += '<button class="search-item" data-page="' + (h.page||'') + '" data-toggle="' + (h.toggle||'') + '">'
+              +   '<span class="si-title">' + escapeHtml(h.label || '内容') + '</span>'
+              +   '<span class="si-page">' + (PAGE_NAMES[h.page] || '') + '</span>'
+              +   '<span class="si-snippet">' + escapeHtml(snippet(h.text, q, 42)) + '</span>'
+              + '</button>';
+      }
+      searchResults.innerHTML = html;
+    }
+    searchResults.classList.add('show');
+  }
+
+  searchInput.addEventListener('input', function(){
+    clearTimeout(searchInput._t);
+    searchInput._t = setTimeout(doSearch, 150);
+  });
+
+  searchResults.addEventListener('click', function(e){
+    var item = e.target.closest('.search-item');
+    if(!item) return;
+    var pageId = item.getAttribute('data-page');
+    var toggleId = item.getAttribute('data-toggle');
+
+    var pageRadio = document.getElementById(pageId);
+    if(pageRadio) pageRadio.checked = true;
+
+    if(toggleId){
+      var t = document.getElementById(toggleId);
+      if(t) t.checked = true;
+      var card = t ? t.closest('.acc-card') : null;
+      if(card){
+        setTimeout(function(){
+          try{ card.scrollIntoView({behavior:'smooth', block:'start'}); }catch(err){ card.scrollIntoView(true); }
+          card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash');
+        }, 150);
+      }
+    }
+    closeSearch();
+    searchInput.blur();
+  });
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.search-box')){ closeSearch(); }
+  });
+})();
+</script>
+</body>
+</html>
